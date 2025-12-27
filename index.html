@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Ema</title>
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --text-color: #ffffff;
+            --accent-color: #ff4d6d;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* Floating Hearts Animation */
+        .hearts { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        .heart {
+            position: absolute; background: var(--accent-color);
+            bottom: -150px; animation: animate 20s linear infinite;
+            clip-path: path('M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z');
+            opacity: 0.2;
+        }
+
+        @keyframes animate {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.4; }
+            100% { transform: translateY(-1200px) rotate(360deg); opacity: 0; }
+        }
+
+        .content-wrapper { z-index: 1; text-align: center; width: 90%; max-width: 500px; }
+        
+        #main-view { transition: opacity 1s ease; }
+        .hidden { display: none; opacity: 0; transform: scale(0.9); }
+
+        .message-container { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 800; margin-bottom: 10px; }
+        .typed-text { color: var(--accent-color); text-shadow: 0 0 15px var(--accent-color); }
+        .cursor { display: inline-block; width: 3px; background-color: white; animation: blink 1s infinite; }
+        
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Button Styling */
+        #secret-btn {
+            margin-top: 30px; padding: 12px 25px; font-size: 1rem;
+            background: transparent; color: var(--accent-color);
+            border: 2px solid var(--accent-color); border-radius: 50px;
+            cursor: pointer; opacity: 0; transition: all 0.4s ease;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        #secret-btn.show { opacity: 1; }
+        #secret-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 0 20px var(--accent-color); }
+
+        /* Secret Message Card */
+        .secret-card {
+            background: rgba(255, 255, 255, 0.07); padding: 30px;
+            border-radius: 20px; border: 1px solid rgba(255, 77, 109, 0.3);
+            backdrop-filter: blur(15px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .photo-container {
+            width: 150px; height: 150px; margin: 0 auto 20px;
+            border-radius: 50%; border: 3px solid var(--accent-color);
+            overflow: hidden; box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .secret-card h2 { color: var(--accent-color); margin: 10px 0; font-size: 1.5rem; }
+        .secret-card p { line-height: 1.5; font-size: 1rem; color: #eee; margin-bottom: 5px; }
+        .music-info { font-size: 0.75rem; color: var(--accent-color); font-style: italic; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="kaise-hua.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="hearts" id="heartContainer"></div>
+
+    <div class="content-wrapper">
+        <div id="main-view">
+            <div class="message-container">
+                <span class="typed-text" id="typewriter"></span><span class="cursor" id="cursor">&nbsp;</span>
+            </div>
+            <button id="secret-btn" onclick="revealSecret()">Open Surprise</button>
+        </div>
+
+        <div id="secret-view" class="hidden">
+            <div class="secret-card">
+                <div class="photo-container">
+                    <img src="ema.JPEG" alt="Ema">
+                </div>
+                <h2>A little note for you...</h2>
+                <p>
+                    Ema, just like the song says... "Kaise hua?" <br><br>
+                    You walked into my life and made everything better. 
+                    Thank you for being you. ❤️
+                </p>
+                <p class="music-info">♫ Now playing: Kaise Hua - Vishal Mishra</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Background Heart Generator
+        const container = document.getElementById('heartContainer');
+        for (let i = 0; i < 20; i++) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDelay = Math.random() * 20 + 's';
+            heart.style.width = heart.style.height = (Math.random() * 20 + 10) + 'px';
+            container.appendChild(heart);
+        }
+
+        // Typewriter Effect
+        const text = "I LOVE YOU EMA.";
+        let index = 0;
+        function type() {
+            if (index < text.length) {
+                document.getElementById("typewriter").innerHTML += text.charAt(index);
+                index++;
+                setTimeout(type, 120);
+            } else {
+                document.getElementById("cursor").style.display = "none";
+                document.getElementById("secret-btn").classList.add("show");
+            }
+        }
+
+        // Reveal Secret, Play Music, and Show Photo
+        function revealSecret() {
+            const music = document.getElementById('bgMusic');
+            music.play().catch(e => console.log("Music play blocked or file missing"));
+
+            const mainView = document.getElementById('main-view');
+            const secretView = document.getElementById('secret-view');
+
+            mainView.style.opacity = '0';
+            setTimeout(() => {
+                mainView.style.display = 'none';
+                secretView.style.display = 'block';
+                setTimeout(() => {
+                    secretView.style.opacity = '1';
+                    secretView.style.transform = 'scale(1)';
+                }, 50);
+            }, 1000);
+        }
+
+        window.onload = () => setTimeout(type, 1000);
+    </script>
+</body>
+</html>
